@@ -758,7 +758,7 @@ const getComments = async (req, res) => {
  group_member.group_id,\
  user.name\
  from record_comment\
- join group_member on group_member.user_id = record_comment.created_by\
+ join group_member on group_member.user_id = record_comment.created_by and group_member.is_primary = true\
  join user on user.user_id = record_comment.created_by\
  where linked_record_id = ? order by created_at desc;`
 
