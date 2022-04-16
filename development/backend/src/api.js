@@ -786,7 +786,7 @@ const getComments = async (req, res) => {
     commentInfo.createdByName = line.name;
 
     if (line.group_id) {
-      const [groupResult] = await pool.query(searchGroupQs, [primaryGroupId]);
+      const [groupResult] = await pool.query(searchGroupQs, [line.group_id]);
       if (groupResult.length === 1) {
         commentInfo.createdByPrimaryGroupName = groupResult[0].name;
       }
