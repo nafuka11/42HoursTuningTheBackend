@@ -756,9 +756,11 @@ const getComments = async (req, res) => {
  record_comment.created_by,\
  record_comment.created_at,\
  group_member.group_id,\
- user.name\
+ user.name,\
+ group_info.name as group_name\
  from record_comment\
  join group_member on group_member.user_id = record_comment.created_by and group_member.is_primary = true\
+ join group_info on group_info.group_id = group_member.group_id\
  join user on user.user_id = record_comment.created_by\
  where linked_record_id = ? order by created_at desc;`
 
@@ -767,7 +769,6 @@ const getComments = async (req, res) => {
 
   const commentList = Array(commentResult.length);
 
-  const searchGroupQs = `select * from group_info where group_id = ?`;
   for (let i = 0; i < commentResult.length; i++) {
     let commentInfo = {
       commentId: '',
@@ -784,13 +785,7 @@ const getComments = async (req, res) => {
     commentInfo.createdBy = line.created_by;
     commentInfo.createdAt = line.created_at;
     commentInfo.createdByName = line.name;
-
-    if (line.group_id) {
-      const [groupResult] = await pool.query(searchGroupQs, [line.group_id]);
-      if (groupResult.length === 1) {
-        commentInfo.createdByPrimaryGroupName = groupResult[0].name;
-      }
-    }
+    commentInfo.createdByPrimaryGroupName = line.group_name;
 
     commentList[i] = commentInfo;
   }
